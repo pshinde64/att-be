@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { createInstitute, deleteInstitute, getInstitute, getInstituteUsers, getInstitutes, patchInstitute } from "../../services/institute";
+import { checkAuthorizationMiddleware } from "../../services/auth";
 
 const router = Router();
 
-router.get("/", (req, res) => {
+router.get("/", checkAuthorizationMiddleware({ allowedRoles:["superadmin"] }), (req, res) => {
     const { page, limit } = req.query;
     getInstitutes(parseInt(page as string), parseInt(limit as string)).then((institutes) => {
         res.send(institutes);
@@ -14,8 +15,8 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/:id", (req, res) => {
-    getInstitute(req.params.id).then((institute) => {
+router.get("/:instituteid", (req, res) => {
+    getInstitute(req.params.instituteid).then((institute) => {
         res.send(institute);
     }).catch((error) => {
         res
@@ -24,9 +25,9 @@ router.get("/:id", (req, res) => {
     });
 });
 
-router.get("/:id/user", (req, res) => {
+router.get("/:instituteid/user", (req, res) => {
     const { page, limit } = req.query;
-    getInstituteUsers(req.params.id, parseInt(page as string), parseInt(limit as string)).then((institute) => {
+    getInstituteUsers(req.params.instituteid, parseInt(page as string), parseInt(limit as string)).then((institute) => {
         res.send(institute);
     }).catch((error) => {
         res
@@ -45,8 +46,8 @@ router.post("/", (req, res) => {
     });
 });
 
-router.patch("/:id", (req, res) => {
-    patchInstitute(req.params.id, req.body).then((institute) => {
+router.patch("/:instituteid", (req, res) => {
+    patchInstitute(req.params.instituteid, req.body).then((institute) => {
         res.send(institute);
     }).catch((error) => {
         res
@@ -55,8 +56,8 @@ router.patch("/:id", (req, res) => {
     });
 });
 
-router.delete("/:id", (req, res) => {
-    deleteInstitute(req.params.id).then((institute) => {
+router.delete("/:instituteid", (req, res) => {
+    deleteInstitute(req.params.instituteid).then((institute) => {
         res.send(institute);
     }).catch((error) => {
         res
