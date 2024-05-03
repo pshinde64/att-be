@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { createUser, deleteUser, getUser, getUsers, patchUser } from "../../services/user";
 import bcrypt from "bcrypt";
+import { checkAuthorizationMiddleware } from "../../services/auth";
 
 const router = Router();
 
-router.get("/", (req, res) => {
+router.get("/", checkAuthorizationMiddleware({ allowedRoles:["superadmin", "admin"] }), (req, res) => {
     const { page, limit } = req.query;
     getUsers(parseInt(page as string), parseInt(limit as string)).then((users) => {
         res.send(users);
@@ -15,7 +16,7 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/:userid", (req, res) => {
+router.get("/:userid", checkAuthorizationMiddleware({ allowedRoles:["superadmin", "admin", "user"] }), (req, res) => {
     getUser(req.params.userid).then((user) => {
         res.send(user);
     }).catch((error) => {
@@ -25,7 +26,7 @@ router.get("/:userid", (req, res) => {
     });
 });
 
-router.post("/", (req, res) => {
+router.post("/", checkAuthorizationMiddleware({ allowedRoles:["superadmin", "admin"] }), (req, res) => {
     const password = req.body.password;
     const hashedPassword = bcrypt.hashSync(password, 10);
     const user = {
@@ -41,7 +42,7 @@ router.post("/", (req, res) => {
     });
 });
 
-router.patch("/:userid", (req, res) => {
+router.patch("/:userid", checkAuthorizationMiddleware({ allowedRoles:["superadmin", "admin", "user"] }), (req, res) => {
     patchUser(req.params.userid, req.body).then((user) => {
         res.send(user);
     }).catch((error) => {
@@ -51,7 +52,7 @@ router.patch("/:userid", (req, res) => {
     });
 });
 
-router.delete("/:userid", (req, res) => {
+router.delete("/:userid", checkAuthorizationMiddleware({ allowedRoles:["superadmin", "admin"] }), (req, res) => {
     deleteUser(req.params.userid).then((user) => {
         res.send(user);
     }).catch((error) => {

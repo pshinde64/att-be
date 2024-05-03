@@ -11,10 +11,13 @@ export const createDivision = async (division: Division) => {
     }
 }
 
-export const getDivision = async (id: string) => {
+export const getDivision = async (id: string, institueId: string) => {
     try {
         return await DivisionModel
-            .findById(id)
+            .findOne({
+                _id: id,
+                institute: institueId
+            })
             .exec();
     } catch (error) {
         throw error;
@@ -41,11 +44,13 @@ export const deleteDivision = async (id: string) => {
     }
 }
 
-export const getDivisions = async (page: number, limit: number) => {
+export const getDivisions = async (page: number, limit: number, institueId: string) => {
     const skip = (page - 1) * limit;
     try {
         return await DivisionModel
-            .find()
+            .find({
+                institute: institueId
+            })
             .skip(skip)
             .limit(limit)
             .exec();
@@ -73,7 +78,9 @@ export const addUsersToDivision = async (id: string, users: string[]) => {
 export const getDivisionUsers = async (id: string, page: number, limit: number) => {
     try {
         return await DivisionUserModel
-            .find({ division: id })
+            .find({ 
+                division: id,
+            })
             .populate("user", "-password")
             .exec();
     } catch (error) {
@@ -102,5 +109,28 @@ export const addAttendance = async (id: string, userId: string, date: string, st
             });
     } catch (error) {
         throw error;
+    }
+}
+
+export const getAttendance = async (id: string, userId: string) => {
+    try {
+        const divisionUser = await DivisionUserModel
+        .findOne(
+            { division: id, user: userId },
+        )
+        .select("_id");
+
+        if (!divisionUser) {
+            throw new Error("User not found in division");
+        }
+
+        return await AttendanceModel.
+            find(
+                { 
+                    _id: divisionUser._id,
+                }
+            )
+    } catch (error) {
+        
     }
 }

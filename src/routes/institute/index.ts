@@ -15,7 +15,7 @@ router.get("/", checkAuthorizationMiddleware({ allowedRoles:["superadmin"] }), (
     });
 });
 
-router.get("/:instituteid", (req, res) => {
+router.get("/:instituteid", checkAuthorizationMiddleware({ allowedRoles:["superadmin", "admin"] }), (req, res) => {
     getInstitute(req.params.instituteid).then((institute) => {
         res.send(institute);
     }).catch((error) => {
@@ -25,7 +25,7 @@ router.get("/:instituteid", (req, res) => {
     });
 });
 
-router.get("/:instituteid/user", (req, res) => {
+router.get("/:instituteid/user", checkAuthorizationMiddleware({ allowedRoles:["superadmin", "admin"] }), (req, res) => {
     const { page, limit } = req.query;
     getInstituteUsers(req.params.instituteid, parseInt(page as string), parseInt(limit as string)).then((institute) => {
         res.send(institute);
@@ -36,7 +36,7 @@ router.get("/:instituteid/user", (req, res) => {
     });
 });
 
-router.post("/", (req, res) => {
+router.post("/", checkAuthorizationMiddleware({ allowedRoles:["superadmin"] }),(req, res) => {
     createInstitute(req.body).then((institute) => {
         res.send(institute);
     }).catch((error) => {
@@ -46,7 +46,7 @@ router.post("/", (req, res) => {
     });
 });
 
-router.patch("/:instituteid", (req, res) => {
+router.patch("/:instituteid", checkAuthorizationMiddleware({ allowedRoles:["superadmin", "admin"] }), (req, res) => {
     patchInstitute(req.params.instituteid, req.body).then((institute) => {
         res.send(institute);
     }).catch((error) => {
@@ -56,7 +56,7 @@ router.patch("/:instituteid", (req, res) => {
     });
 });
 
-router.delete("/:instituteid", (req, res) => {
+router.delete("/:instituteid", checkAuthorizationMiddleware({ allowedRoles:["superadmin"] }), (req, res) => {
     deleteInstitute(req.params.instituteid).then((institute) => {
         res.send(institute);
     }).catch((error) => {

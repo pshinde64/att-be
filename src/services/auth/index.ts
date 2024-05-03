@@ -21,7 +21,7 @@ export const login = async ({ email, password }: { email: string, password: stri
             id: user._id,
             email: user.email,
             role: user.role,
-            institue: user.institute
+            institute: user.institute
         }, process.env.JWT_SECRET as string, { expiresIn: "1d" });
         return token;
     } catch (error) {
@@ -48,13 +48,25 @@ const checkAuthorization = async ({
     institueId: string,
     payload: any
 }) => {
-    console.log({
-        allowedRoles,
-        userId,
-        institueId,
-        payload,
-    });
-    return true;
+    switch (payload.role) {
+        case "superadmin":
+            if (allowedRoles.includes("superadmin")) {
+                return true;
+            }
+            return false;
+        case "admin":
+            if (allowedRoles.includes("admin"))
+            if(institueId && payload.institute === institueId)
+            return true;
+            return false;
+        case "user":
+            if (allowedRoles.includes("user") && payload.id === userId)
+            if(userId && payload.id === userId)
+            return true;
+            return false;
+        default:
+            return false;
+    }
 };
 
 export const checkAuthorizationMiddleware = ({ allowedRoles }: { allowedRoles: string[] }): RequestHandler => {
@@ -66,8 +78,8 @@ export const checkAuthorizationMiddleware = ({ allowedRoles }: { allowedRoles: s
             }
             const isAuthorized = await checkAuthorization({
                 allowedRoles,
-                userId: req.params.userid,
-                institueId: req.params.instituteid,
+                userId: req.params.userid || req.query.userid || req.body.userId,
+                institueId: req.params.instituteid || req.query.instituteid || req.body.instituteId,
                 payload,
             });
             if (!isAuthorized) {
