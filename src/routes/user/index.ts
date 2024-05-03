@@ -15,8 +15,8 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/:id", (req, res) => {
-    getUser(req.params.id).then((user) => {
+router.get("/:userid", (req, res) => {
+    getUser(req.params.userid).then((user) => {
         res.send(user);
     }).catch((error) => {
         res
@@ -41,8 +41,8 @@ router.post("/", (req, res) => {
     });
 });
 
-router.patch("/:id", (req, res) => {
-    patchUser(req.params.id, req.body).then((user) => {
+router.patch("/:userid", (req, res) => {
+    patchUser(req.params.userid, req.body).then((user) => {
         res.send(user);
     }).catch((error) => {
         res
@@ -51,8 +51,8 @@ router.patch("/:id", (req, res) => {
     });
 });
 
-router.delete("/:id", (req, res) => {
-    deleteUser(req.params.id).then((user) => {
+router.delete("/:userid", (req, res) => {
+    deleteUser(req.params.userid).then((user) => {
         res.send(user);
     }).catch((error) => {
         res

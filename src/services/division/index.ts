@@ -84,7 +84,10 @@ export const getDivisionUsers = async (id: string, page: number, limit: number) 
 export const addAttendance = async (id: string, userId: string, date: string, status: string) => {
     try {
         const divisionUser = await DivisionUserModel
-            .findOne({ division: id, user: userId })
+            .findOneAndUpdate(
+                { division: id, user: userId },
+                { upsert: true }
+            )
             .select("_id");
 
         if (!divisionUser) {

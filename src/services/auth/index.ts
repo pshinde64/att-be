@@ -66,8 +66,8 @@ export const checkAuthorizationMiddleware = ({ allowedRoles }: { allowedRoles: s
             }
             const isAuthorized = await checkAuthorization({
                 allowedRoles,
-                userId: payload.id,
-                institueId: payload.institute,
+                userId: req.params.userid,
+                institueId: req.params.instituteid,
                 payload,
             });
             if (!isAuthorized) {
